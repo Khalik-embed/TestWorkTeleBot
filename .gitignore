@@ -161,3 +161,8 @@ cython_debug/
 
 # VS files
 *.code-workspace
+
+#media files
+*.jpeg
+*.jpg
+*.png
