@@ -47,7 +47,15 @@ class Mailings(models.Model):
     photo = models.ImageField(upload_to="photos", default=None, blank=True, null=True)
     class Meta:
         verbose_name = "Рассылки"
-        verbose_name_plural = "Рассылки"
+        verbose_name_plural = "Рассылка"
+
+class Banners(models.Model):
+    name = models.CharField(max_length=255)
+    text = models.TextField(blank=True)
+    photo = models.ImageField(upload_to="photos", default=None, blank=True, null=True)
+    class Meta:
+        verbose_name = "Баннеры"
+        verbose_name_plural = "Баннер"
 
 class UploadImages(models.Model):
     #name = models.CharField(max_length=255)
