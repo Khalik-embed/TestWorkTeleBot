@@ -3,11 +3,10 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from datetime import datetime, timezone
-from database.models import Users
+from database.models import Users, Banners
 
 
 ######## users ##############
-
 async def orm_check_if_user_exist (async_session: AsyncSession, user_id: int) -> bool:
     async with async_session() as session:
         query = select(Users).where(Users.user_id == user_id)
@@ -33,6 +32,24 @@ async def orm_update_user (async_session: AsyncSession, user_id: int, user_name:
                                                                     time_update = datetime.now())
         await session.execute(query)
         await session.commit()
+
+######## Banners ##############
+async def orm_get_banner (async_session: AsyncSession, slug : str) -> Banners:
+    async with async_session() as session:
+        query = select(Banners).where(Banners.slug == slug)
+        result = await session.execute(query)
+    return result.scalar()
+
+async def orm_set_banner_photo_id (async_session: AsyncSession, banner : Banners, file_id :str) -> Banners:
+    async with async_session() as session:
+        query = update(Banners).where(Banners.id == banner.id).values(photo_tg_id=file_id)
+        await session.execute(query)
+        result = await session.commit()
+
+
+# async def orm_set_banner_photo_id (async_session: AsyncSession, slug : str) -> Banners:
+#     async with async_session() as session:
+#         query = select(Banners).where(Banners.slug == slug)
 
 # async def insert_objects(async_session: async_sessionmaker[AsyncSession]) -> None:
 #     async with async_session() as session:

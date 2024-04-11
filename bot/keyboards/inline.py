@@ -30,7 +30,7 @@ def get_user_main_btns(*, level: int, sizes: tuple[int] = (2,)):
         else:
             keyboard.add(InlineKeyboardButton(text=text,
                     callback_data=MenuCallBack(level=level, menu_name=menu_name).pack()))
-            
+
     return keyboard.adjust(*sizes).as_markup()
 
 
@@ -41,7 +41,7 @@ def get_user_catalog_btns(*, level: int, categories: list, sizes: tuple[int] = (
                 callback_data=MenuCallBack(level=level-1, menu_name='main').pack()))
     keyboard.add(InlineKeyboardButton(text='Корзина 🛒',
                 callback_data=MenuCallBack(level=3, menu_name='cart').pack()))
-    
+
     for c in categories:
         keyboard.add(InlineKeyboardButton(text=c.name,
                 callback_data=MenuCallBack(level=level+1, menu_name=c.name, category=c.id).pack()))
@@ -78,7 +78,7 @@ def get_products_btns(
                         menu_name=menu_name,
                         category=category,
                         page=page + 1).pack()))
-        
+
         elif menu_name == "previous":
             row.append(InlineKeyboardButton(text=text,
                     callback_data=MenuCallBack(
@@ -131,7 +131,7 @@ def get_user_cart(
         keyboard.add(
             InlineKeyboardButton(text='На главную 🏠',
                     callback_data=MenuCallBack(level=0, menu_name='main').pack()))
-        
+
         return keyboard.adjust(*sizes).as_markup()
 
 
@@ -140,5 +140,13 @@ def get_callback_btns(*, btns: dict[str, str], sizes: tuple[int] = (2,)):
 
     for text, data in btns.items():
         keyboard.add(InlineKeyboardButton(text=text, callback_data=data))
+
+    return keyboard.adjust(*sizes).as_markup()
+
+def get_url_btns( btns: dict[str, str], sizes: tuple[int] = (2,)):
+    keyboard = InlineKeyboardBuilder()
+
+    for text, url in btns.items():
+        keyboard.add(InlineKeyboardButton(text=text, url=url))
 
     return keyboard.adjust(*sizes).as_markup()

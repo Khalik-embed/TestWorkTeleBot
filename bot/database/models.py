@@ -19,10 +19,6 @@ class Users(Base):
     id: Mapped[intpk]
     user_id: Mapped[int] = Column(Integer, primary_key=True)
     user_name: Mapped[str] = Column(String(255), nullable=True)
-    # time_create =
-    # time_update =
-    #   # IMPORTANT! see details below
-    # __mapper_args__ = {"eager_defaults": True}
     time_create =  Column(DateTime, server_default=func.now())
     time_update = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
@@ -59,8 +55,16 @@ class Items(Base):
     photo = Column(String, nullable=True)
     category = relationship("Category", backref="items")
     sub_category = relationship("SubCategory", backref="items")
-
+    photo_tg_id = Column(Text)
     def __repr__(self):
         return f"<Item(item_code={self.item_code}, item_name={self.item_name})>"
 
-# class Backet(Base):
+class Banners(Base):
+    __tablename__ = 'base_banners'
+    id: Mapped[intpk]
+
+    name : Mapped[str] = Column(String(255))
+    slug : Mapped[str] = Column(String(255))
+    text = Column(Text)
+    photo =  Column(Text)
+    photo_tg_id = Column(Text)

@@ -37,6 +37,7 @@ class Items(models.Model):
     category = models.ForeignKey('Categories', on_delete=models.PROTECT)
     sub_category = models.ForeignKey('SubCategories', on_delete=models.PROTECT)
     photo = models.ImageField(upload_to="photos", default=None, blank=True, null=True)
+    photo_tg_id = models.SlugField(max_length=255, blank=True)
     class Meta:
         verbose_name = "Товар"
         verbose_name_plural = "Товары"
@@ -45,6 +46,7 @@ class Mailings(models.Model):
     mailling_text = models.TextField(blank=True)
     time_to_send = models.DateTimeField()
     photo = models.ImageField(upload_to="photos", default=None, blank=True, null=True)
+    photo_tg_id = models.SlugField(max_length=255, blank=True)
     class Meta:
         verbose_name = "Рассылка"
         verbose_name_plural = "Рассылки"
@@ -54,6 +56,7 @@ class Banners(models.Model):
     slug =  models.SlugField(max_length=255, unique=True, db_index=True)
     text = models.TextField(blank=True)
     photo = models.ImageField(upload_to="photos", default=None, blank=True, null=True)
+    photo_tg_id = models.SlugField(max_length=255, blank=True)
     class Meta:
         verbose_name = "Баннер"
         verbose_name_plural = "Баннеры"
