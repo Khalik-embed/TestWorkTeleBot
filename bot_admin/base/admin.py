@@ -1,13 +1,19 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
-from .models import Users, Categories, SubCategories, Items, Mailings, UploadImages, Banners
+from .models import (Users,
+                     Categories,
+                     SubCategories,
+                     Items,
+                     Mailings,
+                     Banners,
+                     Basket)
 
 
 
 
 @admin.register(Items)
 class ItemAdmin(admin.ModelAdmin):
-    list_display = ('articul', 'item_name', 'category', 'sub_category', 'post_photo')
+    list_display = ('articul', 'item_name', 'cost', 'category', 'subcategory', 'post_photo')
     list_display_links = ('item_name', 'articul')
 
     @admin.display(description="Изображение")
@@ -53,5 +59,18 @@ class BannersAdmin(admin.ModelAdmin):
             return mark_safe(f"<img src='{banner.photo.url}' width=50>")
         return "None"
 
+# @admin.register(UploadImages)
+# class UploadImagesAdmin(admin.ModelAdmin):
+#     list_display = ('Image', 'post_photo')
+#     list_display_links = ('Image',)
 
-admin.site.register(UploadImages)
+#     @admin.display(description="Изображение")
+#     def post_photo(self, image: UploadImages):
+#         if image.photo:
+#             return mark_safe(f"<img src='{image.photo.url}' width=50>")
+#         return "None"
+
+@admin.register(Basket)
+class BasketAdmin(admin.ModelAdmin):
+    list_display = ('order_number','item', 'count', 'user','delivery_place', 'time_create')
+    list_display_links = ('item',)

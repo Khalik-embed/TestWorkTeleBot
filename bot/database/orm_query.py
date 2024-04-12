@@ -3,7 +3,11 @@ from sqlalchemy import select, update, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 from datetime import datetime, timezone
-from database.models import Users, Banners
+from database.models import (Users,
+                             Banners,
+                             Category,
+                             SubCategory,
+                             Items)
 
 
 ######## users ##############
@@ -40,11 +44,34 @@ async def orm_get_banner (async_session: AsyncSession, slug : str) -> Banners:
         result = await session.execute(query)
     return result.scalar()
 
-async def orm_set_banner_photo_id (async_session: AsyncSession, banner : Banners, file_id :str) -> Banners:
+######### Images ############################
+async def orm_set_photo_tg_id (async_session: AsyncSession, orm_object : Items | Banners, file_id :str) -> Banners:
     async with async_session() as session:
-        query = update(Banners).where(Banners.id == banner.id).values(photo_tg_id=file_id)
+        if type(orm_object) == Items:
+            query = update(Items).where(Items.photo == orm_object.photo).values(photo_tg_id=file_id)
+        else:
+            query = update(Banners).where(Banners.photo == orm_object.photo).values(photo_tg_id=file_id)
         await session.execute(query)
         result = await session.commit()
+
+######### Catalog  #############
+async def orm_get_categories(async_session: AsyncSession) -> dict [str, str]:
+    async with async_session() as session:
+        query = select(Category).join(Items, Items.category_id == Category.id).distinct()
+        result = await session.execute(query)
+    return result.scalars().all()
+
+async def orm_get_subcategories(async_session: AsyncSession, category_id : int) -> dict [str, str]:
+    async with async_session() as session:
+        query = select(SubCategory).join(Items, Items.subcategory_id == SubCategory.id).filter(SubCategory.category_id == category_id).distinct()
+        result = await session.execute(query)
+    return result.scalars().all()
+
+async def orm_get_item(async_session: AsyncSession, subcategory_id : int) -> dict [str, str]:
+    async with async_session() as session:
+        query = select(Items).filter(Items.subcategory_id == subcategory_id)
+        result = await session.execute(query)
+    return result.scalars().all()
 
 
 # async def orm_set_banner_photo_id (async_session: AsyncSession, slug : str) -> Banners:

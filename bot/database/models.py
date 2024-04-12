@@ -1,6 +1,6 @@
 import datetime
 from typing import Annotated
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, text
+from sqlalchemy import Column, Integer, String, Text, ForeignKey, text, Float
 from sqlalchemy import DateTime, ForeignKey, Numeric, String, Text, BigInteger, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -23,7 +23,7 @@ class Users(Base):
     time_update = Column(DateTime, server_default=func.now(), onupdate=func.now())
 
 class Category(Base):
-    __tablename__ = 'categories'
+    __tablename__ = 'base_categories'
 
     id: Mapped[intpk]
     name = Column(String(255), index=True)
@@ -34,30 +34,32 @@ class Category(Base):
 
 
 class SubCategory(Base):
-    __tablename__ = 'subcategories'
+    __tablename__ = 'base_subcategories'
 
     id: Mapped[intpk]
     name = Column(String(255), index=True)
     slug = Column(String(255), unique=True, index=True)
-    category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
+    category_id = Column(Integer, ForeignKey('base_categories.id'), nullable=False)
     category = relationship("Category", backref="subcategories")
 
 
 class Items(Base):
-    __tablename__ = 'items'
+    __tablename__ = 'base_items'
 
     id: Mapped[intpk]
-    item_code = Column(Integer)
+    articul = Column(Integer)
     item_name = Column(String(255))
     item_description = Column(Text, nullable=True)
-    category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
-    sub_category_id = Column(Integer, ForeignKey('subcategories.id'), nullable=False)
+    cost = Column(Float)
+    category_id = Column(Integer, ForeignKey('base_categories.id'), nullable=False)
+    subcategory_id = Column(Integer, ForeignKey('base_subcategories.id'), nullable=False)
     photo = Column(String, nullable=True)
     category = relationship("Category", backref="items")
     sub_category = relationship("SubCategory", backref="items")
+
     photo_tg_id = Column(Text)
     def __repr__(self):
-        return f"<Item(item_code={self.item_code}, item_name={self.item_name})>"
+        return f"<Item(articul={self.articul}, item_name={self.item_name})>"
 
 class Banners(Base):
     __tablename__ = 'base_banners'
@@ -68,3 +70,20 @@ class Banners(Base):
     text = Column(Text)
     photo =  Column(Text)
     photo_tg_id = Column(Text)
+
+
+class Basket(Base):
+    __tablename__ = 'base_basket'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    order_number = Column(Integer)
+    item = Column(Integer, ForeignKey('base_items.id'), nullable=False)
+    user = Column(Integer, ForeignKey('base_users.id'), nullable=False)
+    count =  Column(Integer)
+    delivery_place = Column(Text)
+    time_create = Column(DateTime, server_default=func.now())
+
+# class  UploadImages(Base):
+#     __tablename__ = 'base_basket'
+#     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+#     Image = Column(String, nullable=True)
+#     Tg_id = Column(Text)
