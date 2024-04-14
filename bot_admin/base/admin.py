@@ -72,5 +72,5 @@ class BannersAdmin(admin.ModelAdmin):
 
 @admin.register(Basket)
 class BasketAdmin(admin.ModelAdmin):
-    list_display = ('order_number','item', 'count', 'user','delivery_place', 'time_create')
+    list_display = ('order_number','item', 'count', 'paid', 'user','delivery_place', 'time_create')
     list_display_links = ('item',)

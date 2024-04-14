@@ -20,7 +20,7 @@ def get_user_main_btns(*, level: int, sizes: tuple[int] = (1,)):
         if menu_name == 'catalog':
             keyboard.add(InlineKeyboardButton(text=text,
                     callback_data=MenuCallBack(level=level+1, menu_name=menu_name).pack()))
-        elif menu_name == 'backet':
+        elif menu_name == 'basket':
             keyboard.add(InlineKeyboardButton(text=text,
                     callback_data=MenuCallBack(level=4, menu_name=menu_name).pack()))
         else:
@@ -33,8 +33,8 @@ def get_user_main_btns(*, level: int, sizes: tuple[int] = (1,)):
 def get_user_category_btns(*, level: int, categories: Category, sizes: tuple[int] = (1,)):
     keyboard = InlineKeyboardBuilder()
 
-    keyboard.add(InlineKeyboardButton(text=MENU_LEVEL0_BUTTONS['backet'],
-                callback_data=MenuCallBack(level=4, menu_name='cart').pack()))
+    keyboard.add(InlineKeyboardButton(text=MENU_LEVEL0_BUTTONS['basket'],
+                callback_data=MenuCallBack(level=4, menu_name='basket').pack()))
 
     for category in categories:
         keyboard.add(InlineKeyboardButton(text=category.name,
@@ -48,8 +48,8 @@ def get_user_category_btns(*, level: int, categories: Category, sizes: tuple[int
 def get_user_subcategory_btns(*, level: int, subcategories: SubCategory, sizes: tuple[int] = (1,)):
     keyboard = InlineKeyboardBuilder()
 
-    keyboard.add(InlineKeyboardButton(text=MENU_LEVEL0_BUTTONS['backet'],
-                callback_data=MenuCallBack(level=4, menu_name='cart').pack()))
+    keyboard.add(InlineKeyboardButton(text=MENU_LEVEL0_BUTTONS['basket'],
+                callback_data=MenuCallBack(level=4, menu_name='basket').pack()))
     for subcategory in subcategories:
         keyboard.add(InlineKeyboardButton(text=subcategory.name,
                 callback_data=MenuCallBack(level=level+1, menu_name=subcategory.slug, subcategory=subcategory.id).pack()))
@@ -75,10 +75,10 @@ def get_products_btns(
     keyboard = InlineKeyboardBuilder()
 
 
-    keyboard.add(InlineKeyboardButton(text=MENU_LEVEL0_BUTTONS['backet'],
-                callback_data=MenuCallBack(level=4, menu_name='cart').pack()))
+    keyboard.add(InlineKeyboardButton(text=MENU_LEVEL0_BUTTONS['basket'],
+                callback_data=MenuCallBack(level=4, menu_name='basket').pack()))
     keyboard.add(InlineKeyboardButton(text=NAVIGATION['buy'],
-                callback_data=MenuCallBack(level=level, menu_name='add_to_cart', product_id=product_id).pack()))
+                callback_data=MenuCallBack(level=level, menu_name='add_to_basket', product_id=product_id).pack()))
 
     button_next, button_prev = False, False
     for menu_name, text in pagination_btns.items():
@@ -117,7 +117,7 @@ def get_products_btns(
     return keyboard.as_markup()
 
 
-def get_user_cart(
+def get_user_basket(
     *,
     level: int,
     page: int | None,
@@ -127,39 +127,60 @@ def get_user_cart(
 ):
     keyboard = InlineKeyboardBuilder()
     if page:
-        keyboard.add(InlineKeyboardButton(text='Удалить',
+        keyboard.add(InlineKeyboardButton(text=NAVIGATION['delete'],
                     callback_data=MenuCallBack(level=level, menu_name='delete', product_id=product_id, page=page).pack()))
-        keyboard.add(InlineKeyboardButton(text='-1',
+        keyboard.add(InlineKeyboardButton(text=NAVIGATION['decrement'],
                     callback_data=MenuCallBack(level=level, menu_name='decrement', product_id=product_id, page=page).pack()))
-        keyboard.add(InlineKeyboardButton(text='+1',
+        keyboard.add(InlineKeyboardButton(text=NAVIGATION['increment'],
                     callback_data=MenuCallBack(level=level, menu_name='increment', product_id=product_id, page=page).pack()))
 
         keyboard.adjust(*sizes)
 
         row = []
-        for text, menu_name in pagination_btns.items():
+        for menu_name, text in pagination_btns.items():
             if menu_name == "next":
                 row.append(InlineKeyboardButton(text=text,
                         callback_data=MenuCallBack(level=level, menu_name=menu_name, page=page + 1).pack()))
-            elif menu_name == "previous":
+            elif menu_name == "prev":
                 row.append(InlineKeyboardButton(text=text,
                         callback_data=MenuCallBack(level=level, menu_name=menu_name, page=page - 1).pack()))
 
         keyboard.row(*row)
 
-        row2 = [
-        InlineKeyboardButton(text='На главную 🏠',
-                    callback_data=MenuCallBack(level=0, menu_name='main').pack()),
-        InlineKeyboardButton(text='Заказать',
-                    callback_data=MenuCallBack(level=0, menu_name='order').pack()),
-        ]
-        return keyboard.row(*row2).as_markup()
+        row2 = []
+        keyboard.add(InlineKeyboardButton(text=NAVIGATION['payment'],
+                callback_data=MenuCallBack(level=6, menu_name='payment').pack()))
+        # row2.append(InlineKeyboardButton(text=NAVIGATION['delivery'],
+        #             callback_data=MenuCallBack(level=5, menu_name='delivery').pack()))
+        keyboard.row(*row2)
+
+        row3 = []
+        row3.append(InlineKeyboardButton(text=NAVIGATION['menu_0'],
+                    callback_data=MenuCallBack(level=0, menu_name='menu_0').pack()))
+
+        return keyboard.row(*row3).as_markup()
     else:
         keyboard.add(
-            InlineKeyboardButton(text='На главную 🏠',
-                    callback_data=MenuCallBack(level=0, menu_name='main').pack()))
+            InlineKeyboardButton(text=NAVIGATION['menu_0'],
+                    callback_data=MenuCallBack(level=0, menu_name='menu_0').pack()))
 
         return keyboard.adjust(*sizes).as_markup()
+
+
+def get_delivery_btns( *,
+    sizes: tuple[int] = (1,)
+    ):
+    keyboard = InlineKeyboardBuilder()
+
+    keyboard.add(InlineKeyboardButton(text=NAVIGATION['payment'],
+                callback_data=MenuCallBack(level=6, menu_name='payment').pack()))
+    keyboard.add(InlineKeyboardButton(text=MENU_LEVEL0_BUTTONS['basket'],
+                callback_data=MenuCallBack(level=4, menu_name='basket').pack()))
+    keyboard.add(InlineKeyboardButton(text=NAVIGATION['menu_0'],
+                callback_data=MenuCallBack(level=0, menu_name='menu_0').pack()))
+
+    keyboard.adjust(*sizes)
+    return keyboard.as_markup()
 
 
 def get_callback_btns(*, btns: dict[str, str], sizes: tuple[int] = (2,)):

@@ -1,7 +1,10 @@
 import datetime
 from typing import Annotated
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, text, Float
-from sqlalchemy import DateTime, ForeignKey, Numeric, String, Text, BigInteger, func
+from sqlalchemy import (
+    Column, Integer, String, Boolean,
+    Text, text, Float,
+    DateTime, ForeignKey, Numeric,
+    String, Text, BigInteger, func)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -17,7 +20,7 @@ intpk = Annotated[int, mapped_column(primary_key=True)]
 class Users(Base):
     __tablename__ = 'base_users'
     id: Mapped[intpk]
-    user_id: Mapped[int] = Column(Integer, primary_key=True)
+    user_id: Mapped[int] = Column(Integer, unique=True)
     user_name: Mapped[str] = Column(String(255), nullable=True)
     time_create =  Column(DateTime, server_default=func.now())
     time_update = Column(DateTime, server_default=func.now(), onupdate=func.now())
@@ -75,15 +78,13 @@ class Banners(Base):
 class Basket(Base):
     __tablename__ = 'base_basket'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    order_number = Column(Integer)
-    item = Column(Integer, ForeignKey('base_items.id'), nullable=False)
-    user = Column(Integer, ForeignKey('base_users.id'), nullable=False)
+    order_number = Column(Integer, nullable=True)
+    item_id = Column(Integer, ForeignKey('base_items.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('base_users.id'), nullable=False)
     count =  Column(Integer)
-    delivery_place = Column(Text)
+    paid = Column(Boolean, default=False)
+    delivery_place = Column(Text, nullable=True)
     time_create = Column(DateTime, server_default=func.now())
 
-# class  UploadImages(Base):
-#     __tablename__ = 'base_basket'
-#     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-#     Image = Column(String, nullable=True)
-#     Tg_id = Column(Text)
+    item = relationship("Items", lazy="joined")
+    user = relationship("Users", lazy="joined")

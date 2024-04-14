@@ -1,7 +1,7 @@
 from django.db import models
 
 class Users(models.Model):
-    user_id = models.IntegerField()
+    user_id = models.IntegerField(unique=True)
     user_name = models.CharField(max_length=255,blank=True)
     time_create = models.DateTimeField(auto_now_add=True)
     time_update = models.DateTimeField(auto_now=True)
@@ -62,21 +62,13 @@ class Banners(models.Model):
         verbose_name = "Баннер"
         verbose_name_plural = "Баннеры"
 
-# class UploadImages(models.Model):
-#     #name = models.CharField(max_length=255)
-#     Image = models.ImageField(upload_to='uploads_model')
-#     Tg_id = models.TextField(max_length=255, blank=True, null=True)
-#     class Meta:
-#         verbose_name = "Фото"
-#         verbose_name_plural = "Фотографии"
-
-
 class Basket(models.Model):
     item = models.ForeignKey('Items', on_delete=models.PROTECT)
     user = models.ForeignKey('Users', on_delete=models.PROTECT)
     count =  models.IntegerField()
-    delivery_place = models.TextField(blank=True)
-    order_number = models.IntegerField()
+    delivery_place = models.TextField(null=True)
+    order_number = models.IntegerField(null=True)
+    paid = models.BooleanField(default=False)
     time_create = models.DateTimeField(auto_now_add=True)
     class Meta:
         verbose_name = "Заказ"

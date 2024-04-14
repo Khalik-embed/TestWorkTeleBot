@@ -7,6 +7,10 @@ class TgBot:
     public_name : str
 
 @dataclass
+class Payment:
+    provider_token : str
+
+@dataclass
 class DBConfig:
     name : str
     user : str
@@ -18,6 +22,7 @@ class DBConfig:
 class Config:
     tg_bot :  TgBot
     db_config : DBConfig
+    payment : Payment
 
 def load_config( path : None | str = None) -> Config:
     env = Env()
@@ -28,6 +33,7 @@ def load_config( path : None | str = None) -> Config:
                                             user = env('DB_USER'),
                                             password = env('DB_PASSWORD'),
                                             host = env('DB_HOST'),
-                                            port = env('DB_PORT')))
+                                            port = env('DB_PORT')),
+                  payment = Payment(provider_token = env('PROVIDER_TOKEN')))
 
 CONFIG : Config = load_config()

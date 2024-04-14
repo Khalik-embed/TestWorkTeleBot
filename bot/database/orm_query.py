@@ -7,7 +7,8 @@ from database.models import (Users,
                              Banners,
                              Category,
                              SubCategory,
-                             Items)
+                             Items,
+                             Basket)
 
 
 ######## users ##############
@@ -73,7 +74,85 @@ async def orm_get_item(async_session: AsyncSession, subcategory_id : int) -> dic
         result = await session.execute(query)
     return result.scalars().all()
 
+################# backet ######################
+async def orm_get_last_unpayed_user_basket(async_session: AsyncSession, user_id: int | str):
+    async with async_session() as session:
+        query = select(Users).where(Users.user_id == int(user_id))
+        user = await session.execute(query)
+        user = user.scalar()
+        query = select(Basket).filter(Basket.user_id == user.id, Basket.paid == False)
+        result = await session.execute(query)
+    return result.scalars().all()
 
+
+
+async def orm_add_to_basket(async_session: AsyncSession, user_id : int | str, item_id : int | str):
+    user : Users = None
+    item : Items = None
+    async with async_session() as session:
+        query = select(Users).where(Users.user_id == int(user_id))
+        user = await session.execute(query)
+        user = user.scalar()
+        print(user.user_id)
+
+        query = select(Items).where(Items.id == int(item_id))
+        item = await session.execute(query)
+        item = item.scalar()
+        print(item.id)
+
+        query = select(Basket).filter(Basket.user_id == user.id, Basket.item_id == item.id, Basket.paid == False)
+        basket = await session.execute(query)
+        basket = basket.scalar()
+        if basket:
+            basket.count += 1
+            await session.commit()
+            return basket
+        else:
+            session.add(Basket(user_id = user.id, item_id=item.id, count=1, time_create = datetime.now(), paid = False))
+            await session.commit()
+
+async def orm_delete_from_basket(async_session: AsyncSession, user_id: int | str, item_id: int | str):
+    async with async_session() as session:
+        query = select(Users).where(Users.user_id == int(user_id))
+        user = await session.execute(query)
+        user = user.scalar()
+        print(user.user_id)
+
+        query = select(Items).where(Items.id == int(item_id))
+        item = await session.execute(query)
+        item = item.scalar()
+        print(item.id)
+
+        query = delete(Basket).filter(Basket.user_id == user.id, Basket.item_id == item.id, Basket.paid == False)
+        await session.execute(query)
+        await session.commit()
+
+async def orm_reduce_product_in_basket(async_session: AsyncSession, user_id: int, item_id: int):
+    async with async_session() as session:
+        query = select(Users).where(Users.user_id == int(user_id))
+        user = await session.execute(query)
+        user = user.scalar()
+        print(user.user_id)
+
+        query = select(Items).where(Items.id == int(item_id))
+        item = await session.execute(query)
+        item = item.scalar()
+        print(item.id)
+
+        query = select(Basket).filter(Basket.user_id == user.id, Basket.item_id == item.id, Basket.paid == False)
+        basket = await session.execute(query)
+        basket = basket.scalar()
+
+        if not basket:
+            return
+        if basket.count > 1:
+            basket.count -= 1
+            await session.commit()
+            return True
+        else:
+            await orm_delete_from_basket(session, user_id, item_id)
+            await session.commit()
+            return False
 # async def orm_set_banner_photo_id (async_session: AsyncSession, slug : str) -> Banners:
 #     async with async_session() as session:
 #         query = select(Banners).where(Banners.slug == slug)

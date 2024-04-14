@@ -37,7 +37,8 @@ class UpdateUser(BaseMiddleware):
                     await orm_add_user(self.session_pool, int(user_id), user_name)
                 else:
                     await orm_update_user(self.session_pool, int(user_id), user_name)
-
+        elif (chat_type == 'pre_checkout_query'):
+            await handler(event, data)
 
 
 def get_user_name_user_id(event: TelegramObject) -> [str, str]:
@@ -45,6 +46,7 @@ def get_user_name_user_id(event: TelegramObject) -> [str, str]:
     user_id = None
     chat_id = None
     chat_type = None
+    print(event)
 
     if (hasattr(event, "message")
         and hasattr(event.message, "from_user")
@@ -56,7 +58,7 @@ def get_user_name_user_id(event: TelegramObject) -> [str, str]:
         if hasattr(event.message, "chat"):
             chat_id = event.message.chat.id
 
-    if (hasattr(event, "callback_query")
+    elif (hasattr(event, "callback_query")
         and hasattr(event.callback_query, "from_user")
         and hasattr(event.callback_query.from_user, "id")):
 
@@ -67,6 +69,14 @@ def get_user_name_user_id(event: TelegramObject) -> [str, str]:
             user_name = event.callback_query.from_user.username
         if hasattr(event.callback_query.message, "chat"):
             chat_id = event.callback_query.message.chat.id
+
+    elif (hasattr(event, "pre_checkout_query")
+        and hasattr(event.pre_checkout_query, "from_user")
+        and hasattr(event.pre_checkout_query.from_user, "id")):
+
+        chat_type = "pre_checkout_query"
+        user_id = event.pre_checkout_query.from_user.id
+
     return [chat_id, user_name, user_id, chat_type]
 
 # class UpdateUser(BaseMiddleware):
