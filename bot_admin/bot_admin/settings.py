@@ -27,9 +27,9 @@ print(PROJ_DIR)
 SECRET_KEY = CONFIG.django_config.secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 
 # Application definition
@@ -148,6 +148,6 @@ LOGGING = {
             "propagate": True,
     },
 }
-
+STATIC_ROOT = '/static/'
 MEDIA_URL = '.../media/'
 MEDIA_ROOT = PROJ_DIR / 'media'

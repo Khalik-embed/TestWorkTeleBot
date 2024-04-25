@@ -29,11 +29,11 @@ def load_config( path : None | str = None) -> Config:
     env.read_env(path)
     return Config(tg_bot = TgBot(token=env('BOT_TOKEN'),
                                 public_name=env('PUBLIC_NAME')),
-                  db_config = DBConfig(   name = env('DB_NAME'),
-                                            user = env('DB_USER'),
-                                            password = env('DB_PASSWORD'),
-                                            host = env('DB_HOST'),
-                                            port = env('DB_PORT')),
+                  db_config = DBConfig(   name = env('POSTGRES_DB'),
+                                            user = env('POSTGRES_USER'),
+                                            password = env('POSTGRES_PASSWORD'),
+                                            host = env('POSTGRES_HOST'),
+                                            port = env('POSTGRES_PORT')),
                   payment = Payment(provider_token = env('PROVIDER_TOKEN')))
 
 CONFIG : Config = load_config()

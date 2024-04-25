@@ -23,8 +23,8 @@ def load_config( path : None | str = None) -> Config:
     env = Env()
     env.read_env(path)
     return Config(  django_config = DJangoConfigClass(secret_key = env('DJ_SECRET_KEY')),
-                    db_config = DBConfig(   name = env('DB_NAME'),
-                                            user = env('DB_USER'),
-                                            password = env('DB_PASSWORD'),
+                    db_config = DBConfig(   name = env('POSTGRES_DB'),
+                                            user = env('POSTGRES_USER'),
+                                            password = env('POSTGRES_PASSWORD'),
                                             host = env('DB_HOST'),
-                                            port = env('DB_PORT')))
+                                            port = env('POSTGRES_PORT')))
