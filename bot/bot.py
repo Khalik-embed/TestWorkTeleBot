@@ -27,7 +27,6 @@ async def main():
     dp = Dispatcher()
 
     dp.include_router(user_private_router)
-    # dp.include_router(user_group_router)
 
     # dp.startup.register(on_startup)
     # dp.shutdown.register(on_shutdown)

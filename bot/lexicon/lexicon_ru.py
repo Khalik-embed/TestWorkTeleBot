@@ -27,7 +27,8 @@ ITEM_PAGE : [str, str] = {
 
 ANSWERS : [str, str] = {
     'item_in_basket' : 'Товар добавлен в корзину.',
-    'delivery_place' : ('\n Ваш адрес: {delivery_place}'),
+    'delivery_place' : '\n Ваш адрес: {delivery_place}',
+    'greeting_for_payment' : 'Заказ принят!',
 }
 
 PAYMENT_INVOICE : [str, str] = {

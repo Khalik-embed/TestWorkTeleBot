@@ -1,4 +1,11 @@
 from django.db import models
+from lexicon import (
+    USER,           USERS,          CATEGORY,
+    CATEGORYES,     SUB_CATEGORY,   SUB_CATEGORES,
+    ITEM,           ITEMS,          MAILING,
+    MAILINGS,       BANNER,         BANNERS,
+    PAID_ORDER,     PAID_ORDERS,    BACKET,
+    FAQ)
 
 class Users(models.Model):
     user_id = models.IntegerField(unique=True)
@@ -6,8 +13,8 @@ class Users(models.Model):
     time_create = models.DateTimeField(auto_now_add=True)
     time_update = models.DateTimeField(auto_now=True)
     class Meta:
-        verbose_name = "Пользователь"
-        verbose_name_plural = "Пользователи"
+        verbose_name = USER
+        verbose_name_plural = USERS
 
 class Categories(models.Model):
     name = models.CharField(max_length=255, db_index=True)
@@ -16,8 +23,8 @@ class Categories(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = "Категория"
-        verbose_name_plural = "Категории"
+        verbose_name = CATEGORY
+        verbose_name_plural = CATEGORYES
 
 class SubCategories(models.Model):
     name = models.CharField(max_length=255, db_index=True)
@@ -27,8 +34,8 @@ class SubCategories(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = "Подкатегория"
-        verbose_name_plural = "Подкатегории"
+        verbose_name = SUB_CATEGORY
+        verbose_name_plural = SUB_CATEGORES
 
 class Items(models.Model):
     articul = models.IntegerField()
@@ -40,17 +47,18 @@ class Items(models.Model):
     photo = models.ImageField(upload_to="photos", default=None, blank=True, null=True)
     photo_tg_id = models.SlugField(max_length=255, blank=True)
     class Meta:
-        verbose_name = "Товар"
-        verbose_name_plural = "Товары"
+        verbose_name = ITEM
+        verbose_name_plural = ITEMS
 
 class Mailings(models.Model):
     mailling_text = models.TextField(blank=True)
     time_to_send = models.DateTimeField()
     photo = models.ImageField(upload_to="photos", default=None, blank=True, null=True)
     photo_tg_id = models.SlugField(max_length=255, blank=True)
+    is_sended = models.BooleanField(default=False)
     class Meta:
-        verbose_name = "Рассылка"
-        verbose_name_plural = "Рассылки"
+        verbose_name = MAILING
+        verbose_name_plural = MAILINGS
 
 class Banners(models.Model):
     name = models.CharField(max_length=255)
@@ -59,17 +67,41 @@ class Banners(models.Model):
     photo = models.ImageField(upload_to="photos", default=None, blank=True, null=True)
     photo_tg_id = models.SlugField(max_length=255, blank=True)
     class Meta:
-        verbose_name = "Баннер"
-        verbose_name_plural = "Баннеры"
+        verbose_name = BANNER
+        verbose_name_plural = BANNERS
+
+class PaidOrder(models.Model):
+    total_amount =  models.IntegerField()
+    telegram_payment_charge_id = models.UUIDField()
+    provider_payment_charge_id = models.UUIDField()
+    shipping_option = models.TextField()
+    contact_name = models.TextField()
+    contact_phone_number = models.TextField()
+    shipping_state = models.TextField()
+    shipping_city = models.TextField()
+    shipping_street_line1 = models.TextField()
+    shipping_street_line2 = models.TextField()
+    shipping_post_code = models.TextField()
+    time_create = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        verbose_name = PAID_ORDER
+        verbose_name_plural = PAID_ORDERS
 
 class Basket(models.Model):
     item = models.ForeignKey('Items', on_delete=models.PROTECT)
     user = models.ForeignKey('Users', on_delete=models.PROTECT)
     count =  models.IntegerField()
     delivery_place = models.TextField(null=True)
-    order_number = models.IntegerField(null=True)
+    paid_order = models.ForeignKey('PaidOrder', on_delete=models.PROTECT, blank=True, null=True)
     paid = models.BooleanField(default=False)
     time_create = models.DateTimeField(auto_now_add=True)
     class Meta:
-        verbose_name = "Заказ"
-        verbose_name_plural = "Заказы"
+        verbose_name = BACKET
+        verbose_name_plural = BACKET
+
+class FAQ(models.Model):
+    question = models.TextField(null=True)
+    answer = models.TextField(null=True)
+    class Meta:
+        verbose_name = FAQ
+        verbose_name_plural = FAQ

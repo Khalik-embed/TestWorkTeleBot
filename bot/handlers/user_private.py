@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state, State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.types.chat_member_left import ChatMemberLeft
-from aiogram.types import CallbackQuery, PreCheckoutQuery, Message, ContentType
+from aiogram.types import CallbackQuery, PreCheckoutQuery, Message, ContentType, ShippingQuery, InlineQuery, InputTextMessageContent, InlineQueryResultArticle
 from filters.filters import IsChatMember
 from config.config import CONFIG
 #from lexicon.lexicon_ru import BOT_MESSAGES
@@ -13,10 +13,16 @@ from database.orm_query import orm_add_to_basket
 # from filters.chat_types import ChatTypeFilter
 from handlers.media_handlings import set_photo_id
 from handlers.menu_processing import get_menu_content, delivery
-from handlers.payment import payment
+from handlers.payment import payment, shipping_check
 from keyboards.inline import MenuCallBack
 from lexicon.lexicon_ru import ANSWERS
+import hashlib
+from database.orm_query import (
+   orm_get_question_from_faq,
+   orm_get_answer_from_faq
+)
 #get_callback_btns
+# from openpyxl import Workbook
 
 storage = MemoryStorage()
 
@@ -109,7 +115,46 @@ async def pre_checkout_query(pre_checkout_query : PreCheckoutQuery,bot : Bot):
     print(pre_checkout_query)
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok = True)
 
-# @user_private_router.message()
-# async def succesful_payment(message : Message):
-#     print(message)
-#     await message.answer("лошара!!!")
+@user_private_router.shipping_query()
+async def shipping_query(shipping_query: ShippingQuery, bot : Bot):
+    await shipping_check(shipping_query, bot)
+
+@user_private_router.message(F.content_type == ContentType.SUCCESSFUL_PAYMENT)
+async def succesful_payment(message : Message):
+    print(message)
+    await message.answer("лошара!!!")
+
+@user_private_router.inline_query()
+async def get_in(inline_query : InlineQuery, bot : Bot, session_pool: AsyncSession):
+    text = inline_query.query
+    if not text:
+        return
+    questions = await orm_get_question_from_faq(session_pool)
+    filtered_question = [question for question in questions if text.lower()  in question.lower() ]
+    answer = []
+    if filtered_question:
+        filtered_question = filtered_question[0]
+        answer = await orm_get_answer_from_faq(session_pool, filtered_question)
+
+    if answer:
+        message_text = filtered_question + "\n - " + answer[0]
+    else :
+        message_text = text + "\n - нет такой ответ"
+    input_content = InputTextMessageContent(message_text = message_text)
+    result_id = hashlib.md5(message_text.encode()).hexdigest()
+
+    if answer:
+        item = InlineQueryResultArticle(
+            input_message_content = input_content,
+            id = result_id,
+            description = filtered_question,
+            title = "prompt")
+    else :
+        item = InlineQueryResultArticle(
+            input_message_content = input_content,
+            id = result_id,
+            description = text,
+            title = "prompt")
+
+    await bot.answer_inline_query(inline_query_id=inline_query.id, results=[item])
+    print(inline_query)

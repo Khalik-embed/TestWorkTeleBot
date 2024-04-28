@@ -88,3 +88,18 @@ class Basket(Base):
 
     item = relationship("Items", lazy="joined")
     user = relationship("Users", lazy="joined")
+
+class Mailings(Base):
+    __tablename__ = 'base_mailings'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    mailling_text = Column(Text, nullable=True)
+    time_to_send = Column(DateTime)
+    photo = Column(String, nullable=True)
+    photo_tg_id = Column(Text)
+    is_sended = Column(Boolean, default=False)
+
+class FAQ(Base):
+    __tablename__ = 'base_faq'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    question = Column(String, nullable=True)
+    answer = Column(String, nullable=True)
