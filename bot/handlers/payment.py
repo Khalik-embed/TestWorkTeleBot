@@ -31,7 +31,6 @@ async def shipping_query(shipping_query: ShippingQuery, bot : Bot):
 
 @payment_router.message(F.content_type == ContentType.SUCCESSFUL_PAYMENT)
 async def succesful_payment(message : Message):
-    print(message)
     await orm_add_succesful_payment(payment = message.successful_payment)
     await orm_set_paed_packet(payment = message.successful_payment)
 

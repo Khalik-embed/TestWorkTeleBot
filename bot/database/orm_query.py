@@ -97,12 +97,10 @@ async def orm_add_to_basket(user_id : int | str, item_id : int | str):
         query = select(Users).where(Users.user_id == int(user_id))
         user = await session.execute(query)
         user = user.scalar()
-        print(user.user_id)
 
         query = select(Items).where(Items.id == int(item_id))
         item = await session.execute(query)
         item = item.scalar()
-        print(item.id)
 
         query = select(Basket).filter(Basket.user_id == user.id, Basket.item_id == item.id, Basket.paid == False)
         basket = await session.execute(query)
@@ -120,12 +118,10 @@ async def orm_delete_from_basket(user_id: int | str, item_id: int | str):
         query = select(Users).where(Users.user_id == int(user_id))
         user = await session.execute(query)
         user = user.scalar()
-        print(user.user_id)
 
         query = select(Items).where(Items.id == int(item_id))
         item = await session.execute(query)
         item = item.scalar()
-        print(item.id)
 
         query = delete(Basket).filter(Basket.user_id == user.id, Basket.item_id == item.id, Basket.paid == False)
         await session.execute(query)
@@ -136,12 +132,10 @@ async def orm_reduce_product_in_basket(user_id: int, item_id: int):
         query = select(Users).where(Users.user_id == int(user_id))
         user = await session.execute(query)
         user = user.scalar()
-        print(user.user_id)
 
         query = select(Items).where(Items.id == int(item_id))
         item = await session.execute(query)
         item = item.scalar()
-        print(item.id)
 
         query = select(Basket).filter(Basket.user_id == user.id, Basket.item_id == item.id, Basket.paid == False)
         basket = await session.execute(query)
@@ -158,17 +152,6 @@ async def orm_reduce_product_in_basket(user_id: int, item_id: int):
             await session.commit()
             return False
 
-
-# async def orm_paid_update_basket():
-#     async with SESSION_MAKER() as session:
-#         user = Users(user_id = user_id,
-#                      user_name = user_name,
-#                      time_create = datetime.now(),
-#                      time_update = datetime.now(), )
-#         session.add(user)
-#         result = await session.flush()
-#         result = await session.commit()
-
 async def orm_add_payment_packet(baskets : Basket):
     async with SESSION_MAKER() as session:
         order = PaidOrder(time_create = datetime.now())
@@ -179,12 +162,6 @@ async def orm_add_payment_packet(baskets : Basket):
         await session.execute(query)
         await session.commit()
 
-            # query = select(Users).where(Users.user_id == int(user_id))
-            # user = await session.execute(query)
-            # user = user.scalar()
-            # query = select(Basket).filter(Basket.user_id == user.id, Basket.paid == False)
-            # result = await session.execute(query)
-            # baskets = result.scalars().all()
 
 async def orm_set_paed_packet(payment : SuccessfulPayment):
     async with SESSION_MAKER() as session:
@@ -192,19 +169,14 @@ async def orm_set_paed_packet(payment : SuccessfulPayment):
         await session.execute(query)
         await session.commit()
 
-
-
 ################# PAID ORDERS ######################
 async def orm_create_invoice_order(baskets : list[Basket]) -> int:
     result = None
     create_new_order = False
-    print("__________________________________________________________")
     async with SESSION_MAKER() as session:
         for basket in baskets:
-            print(basket)
             if not basket.paid_order_id:
                 create_new_order = True
-        print(create_new_order)
         if create_new_order:
             order = PaidOrder(time_create = datetime.now())
             session.add(order)
@@ -232,7 +204,6 @@ async def orm_add_succesful_payment(payment : SuccessfulPayment):
         await session.execute(query)
         await session.commit()
 
-
 ####################### FAQ #######################################
 async def orm_get_question_from_faq():
     async with SESSION_MAKER() as session:
@@ -253,7 +224,6 @@ async def orm_add_question_to_faq(question : str):
         session.add(question)
         await session.flush()
         await session.commit()
-
 
 ######################### MAILINGS ####################################
 async def orm_get_dont_sended_mailing():

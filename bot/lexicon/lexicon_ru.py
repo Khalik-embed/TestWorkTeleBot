@@ -31,7 +31,7 @@ ANSWERS : [str, str] = {
     'no_shipping_to_country' : 'К сожалению нет доставки в вашу страну',
     'faq_answer' : "Набери @{bot_name} и затем напиши свой вопрос",
 }
-#@test_echo10_bot
+
 PAYMENT_INVOICE : [str, str] = {
     'title' : 'Тестовый прием платежей',
     'description' : 'Платеж за товар',

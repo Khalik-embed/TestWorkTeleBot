@@ -90,9 +90,6 @@ def pages(paginator: Paginator) -> dict:
 async def items(
     callback_data : MenuCallBack | None = None,
     callback: CallbackQuery | None = None ):
-    print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-    print(callback_data)
-    print(COMMANDS.add_to_basket.name)
     if callback_data.menu_name == COMMANDS.add_to_basket.name:
         await add_to_basket(callback = callback, callback_data = callback_data)
         return
@@ -133,12 +130,8 @@ async def basket( callback_data : MenuCallBack | None = None,
             callback_data.page -= 1
     elif callback_data.menu_name == COMMANDS.increment.name:
         await orm_add_to_basket(user_id = callback.from_user.id, item_id = callback_data.product_id)
-    # elif callback_data.menu_name == COMMANDS.payment:  ############
-    #     await payment(callback, bot)
-    #     return
 
     baskets : [baskets] = await orm_get_last_unpayed_user_basket(user_id = callback.from_user.id)
-    print(baskets)
     orm_photo_object : Items | Banners = None
     if not baskets:
         banner : Banners = await orm_get_banner(MenuLevel.basket.name)
@@ -151,7 +144,6 @@ async def basket( callback_data : MenuCallBack | None = None,
             page=None,
             pagination_btns=None,
             product_id=None,)
-
     else:
         paginator : Paginator = Paginator(baskets, page = callback_data.page)
 
@@ -168,7 +160,7 @@ async def basket( callback_data : MenuCallBack | None = None,
                     \n{ITEM_PAGE['item']} {paginator.page} {ITEM_PAGE['item']} {paginator.pages} {ITEM_PAGE['in_backet']} .\
                     \n{ITEM_PAGE['total_price_in_backet']} {total_price}")
 
-        pagination_btns : [] = pages(paginator)#######3
+        pagination_btns : [] = pages(paginator)
 
         kbds : InlineKeyboardMarkup = get_user_basket(
             page = callback_data.page,
@@ -186,9 +178,7 @@ async def add_to_basket(callback : CallbackQuery,
 
 async def faq(callback : CallbackQuery,
                 bot : Bot):
-    print("__________________________________________________________________")
     me : User = await bot.get_me()
-    print(me)
     await callback.answer(ANSWERS['faq_answer'].format(bot_name = me.username),
                           show_alert = True)
 

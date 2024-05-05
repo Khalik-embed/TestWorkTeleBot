@@ -23,8 +23,6 @@ async def get_in(inline_query : InlineQuery, bot : Bot):
 
     filtered_question = await get_autocompletion(text = user_text)
     answer = await get_answers(filtered_question = filtered_question)
-    print(f"filtered_question {filtered_question}")
-    print(f"answer {answer}")
     message_text = answer_template(
         answer = answer,
         filtered_question = filtered_question,
@@ -45,7 +43,6 @@ async def get_in(inline_query : InlineQuery, bot : Bot):
             id = result_id,
             description = user_text,
             title = NAVIGATION['prompt'])
-        #await set_new_question(question = user_text)
     await bot.answer_inline_query(inline_query_id = inline_query.id, results=[item])
 
 async def get_autocompletion(text : str) -> [str]:

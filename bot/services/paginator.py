@@ -11,7 +11,7 @@ class Paginator:
     def __get_slice(self):
         start = (self.page - 1) * self.per_page
         stop = start + self.per_page
-        return self.array[start:stop]
+        return self.array[start : stop]
 
     def get_page(self):
         page_items = self.__get_slice()
