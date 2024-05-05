@@ -39,7 +39,7 @@ class SubCategoriesAdmin(admin.ModelAdmin):
 
 @admin.register(Mailings)
 class MailingsAdmin(admin.ModelAdmin):
-    list_display = ('mailling_text', 'time_to_send', 'post_photo', 'is_sended')
+    list_display = ('mailling_text', 'post_photo', 'is_sended')
     list_display_links = ('mailling_text',)
 
     @admin.display(description=PICTURE)

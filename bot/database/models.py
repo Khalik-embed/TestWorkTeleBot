@@ -2,7 +2,8 @@ from typing import Annotated
 from sqlalchemy import (
     Column,     Integer,    Boolean,
     Text,       Float,      DateTime,
-    ForeignKey, String,     UUID, func)
+    ForeignKey, String,     UUID,
+    Double,     func)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 class Base(DeclarativeBase):
@@ -14,7 +15,7 @@ intpk = Annotated[int, mapped_column(primary_key=True)]
 class Users(Base):
     __tablename__ = 'base_users'
     id: Mapped[intpk]
-    user_id: Mapped[int] = Column(Integer, unique=True)
+    user_id: Mapped[int] = Column(Double, unique=True)
     user_name: Mapped[str] = Column(String(255), nullable=True)
     time_create =  Column(DateTime, server_default=func.now())
     time_update = Column(DateTime, server_default=func.now(), onupdate=func.now())
@@ -103,7 +104,6 @@ class Mailings(Base):
     __tablename__ = 'base_mailings'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     mailling_text = Column(Text, nullable=True)
-    time_to_send = Column(DateTime)
     photo = Column(String, nullable=True)
     photo_tg_id = Column(Text)
     is_sended = Column(Boolean, default=False)

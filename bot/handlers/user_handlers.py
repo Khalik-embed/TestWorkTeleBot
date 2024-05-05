@@ -20,4 +20,6 @@ async def user_menu(callback: CallbackQuery,
     print("____________________________________________________callback_data")
     print(callback_data)
     print(callback)
-    await get_menu_content(callback_data = callback_data, callback = callback)
+    await get_menu_content(callback_data = callback_data,
+                           callback = callback,
+                           bot = bot)

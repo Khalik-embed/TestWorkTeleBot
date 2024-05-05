@@ -4,14 +4,18 @@ from aiogram.types.chat_member_left import ChatMemberLeft
 from aiogram import BaseMiddleware, Bot
 from aiogram.types import TelegramObject
 
+from handlers.media_handlings import get_photo_id, set_photo_id
 from config.config import CONFIG
+from config.commands import BANNERS
+from keyboards.inline import get_url_btns
 from database.orm_query import (
     orm_check_if_user_exist,
     orm_add_user,
     orm_update_user,
     orm_get_user_ids,
     orm_get_dont_sended_mailing,
-    orm_set_sended_mailing)
+    orm_set_sended_mailing,
+    orm_get_banner)
 from database.models import Mailings
 
 
@@ -32,7 +36,8 @@ class UpdateUser(BaseMiddleware):
             if not is_chat_member:
                 return
             await handler(event, data)
-            await user_db_updating(user_name = user_name, user_id = user_id)
+            if user_id:
+                await user_db_updating(user_name = user_name, user_id = user_id)
             await check_mailing(bot = self.bot)
 
 def get_event_data(event: TelegramObject) -> [str | int | None]:
@@ -106,7 +111,7 @@ async def start_mailing(bot : Bot, mailing : Mailings) -> None:
             photo_id = get_photo_id(orm_object = mailing)
             result  = await bot.send_photo(chat_id = user, photo = photo_id, parse_mode = 'HTML',
                                         caption =  mailing.mailling_text)
-            await set_photo_id(orm_object = banner, file_id = result.photo[0].file_id)
+            await set_photo_id(orm_object = mailing, file_id = result.photo[0].file_id)
     await orm_set_sended_mailing(mailing)
 
 async def subscibtion_protect(bot : Bot, chat_type : str | None,
@@ -131,7 +136,7 @@ async def user_db_updating(user_name : str, user_id : str | int) -> None:
 
 
 async def subscription_requriment_send(bot : Bot, chat_id : int | str):
-    banner : Banners =  await orm_get_banner(slug = BANNERS.subscrion_required)
+    banner : Banners =  await orm_get_banner(slug = BANNERS.subscrion_required.name)
     if banner:
         text = banner.text
         buttons = {CONFIG.tg_bot.public_name : 'https://t.me/' + CONFIG.tg_bot.public_name[1:]}

@@ -240,17 +240,20 @@ async def orm_get_question_from_faq():
         result = await session.execute(query)
     return result.scalars().all()
 
-async def orm_get_answer_from_faq(question : str):
+async def orm_get_answer_from_faq(text : str):
     async with SESSION_MAKER() as session:
-        query = select(FAQ.answer).where(FAQ.question == question)
+        query = select(FAQ.answer).where(FAQ.question == text)
         result = await session.execute(query)
     return result.scalars().all()
 
 async def orm_add_question_to_faq(question : str):
     async with SESSION_MAKER() as session:
-        query = select(FAQ.answer).where(FAQ.question == question)
-        result = await session.execute(query)
-    return result.scalars().all()
+        question = FAQ(question = question,
+                     answer = "")
+        session.add(question)
+        await session.flush()
+        await session.commit()
+
 
 ######################### MAILINGS ####################################
 async def orm_get_dont_sended_mailing():

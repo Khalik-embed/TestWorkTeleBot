@@ -1,4 +1,10 @@
-from aiogram.types import InputMediaPhoto, Message, CallbackQuery
+from aiogram.methods.get_me import GetMe
+from aiogram.types import (
+    InputMediaPhoto,
+    Message,
+    CallbackQuery,
+    User
+    )
 from keyboards.inline import MenuCallBack
 from sqlalchemy.ext.asyncio import AsyncSession
 from aiogram import Bot
@@ -11,7 +17,7 @@ from database.orm_query import (
     orm_add_to_basket,
     orm_reduce_product_in_basket,
     orm_delete_from_basket,
-)
+    )
 
 from services.paginator import Paginator
 
@@ -176,10 +182,21 @@ async def add_to_basket(callback : CallbackQuery,
                         callback_data : MenuCallBack):
     await orm_add_to_basket(user_id = callback.from_user.id,
                             item_id = callback_data.product_id)
-    await callback.answer(ANSWERS['item_in_basket'])
+    await callback.answer(text = ANSWERS['item_in_basket'])
+
+async def faq(callback : CallbackQuery,
+                bot : Bot):
+    print("__________________________________________________________________")
+    me : User = await bot.get_me()
+    print(me)
+    await callback.answer(ANSWERS['faq_answer'].format(bot_name = me.username),
+                          show_alert = True)
 
 async def get_menu_content(callback_data : MenuCallBack | None = None,
-    message : Message | None = None, callback: CallbackQuery | None = None ):
+        message : Message | None = None,
+        callback: CallbackQuery | None = None,
+        bot : Bot | None = None):
+
     if callback_data.level == MenuLevel.start_menu.value:
         await main_menu(message = message,  callback = callback)
 
@@ -194,3 +211,7 @@ async def get_menu_content(callback_data : MenuCallBack | None = None,
 
     elif callback_data.level == MenuLevel.basket.value:
         await basket(callback = callback, callback_data = callback_data)
+
+    elif callback_data.level == MenuLevel.faq.value:
+        await faq(callback = callback,
+                  bot = bot)

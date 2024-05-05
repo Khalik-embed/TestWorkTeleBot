@@ -8,7 +8,7 @@ from lexicon import (
     FAQ)
 
 class Users(models.Model):
-    user_id = models.IntegerField(unique=True)
+    user_id = models.BigIntegerField(unique=True)
     user_name = models.CharField(max_length=255,blank=True)
     time_create = models.DateTimeField(auto_now_add=True)
     time_update = models.DateTimeField(auto_now=True)
@@ -52,7 +52,6 @@ class Items(models.Model):
 
 class Mailings(models.Model):
     mailling_text = models.TextField(blank=True)
-    time_to_send = models.DateTimeField()
     photo = models.ImageField(upload_to="photos", default=None, blank=True, null=True)
     photo_tg_id = models.SlugField(max_length=255, blank=True)
     is_sended = models.BooleanField(default=False)

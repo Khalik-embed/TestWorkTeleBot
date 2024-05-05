@@ -4,7 +4,8 @@ from dataclasses import dataclass
 from lexicon import NAVIGATION
 
 BANNERS = Enum('BANNERS', ['subscrion_required', 'start_menu', 'categories', 'subcategories', 'basket', 'items', 'faq'])
-COMMANDS = Enum('COMMANDS', ['add_to_basket', 'payment', 'delete', 'decrement', 'increment', 'back', 'next', 'prev'])
+COMMANDS = Enum('COMMANDS', ['add_to_basket', 'payment', 'delete', 'decrement', 'increment', 'back', 'next', 'prev', 'faq'])
+
 class MenuLevel(Enum):
     start_menu = 0
     categories = 1
