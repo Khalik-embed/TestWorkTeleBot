@@ -5,6 +5,8 @@ from environs import Env
 class TgBot:
     token : str
     public_name : str
+    debug : bool
+    lang : str
 
 @dataclass
 class Payment:
@@ -27,8 +29,10 @@ class Config:
 def load_config( path : None | str = None) -> Config:
     env = Env()
     env.read_env(path)
-    return Config(tg_bot = TgBot(token=env('BOT_TOKEN'),
-                                public_name=env('PUBLIC_NAME')),
+    return Config(tg_bot = TgBot(token = env('BOT_TOKEN'),
+                                public_name = env('PUBLIC_NAME'),
+                                debug = True if env('DEBUG') == 'True' else False,
+                                lang = env('LANGUAGE')),
                   db_config = DBConfig(   name = env('POSTGRES_DB'),
                                             user = env('POSTGRES_USER'),
                                             password = env('POSTGRES_PASSWORD'),

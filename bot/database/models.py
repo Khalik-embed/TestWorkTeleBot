@@ -1,21 +1,15 @@
-import datetime
 from typing import Annotated
 from sqlalchemy import (
-    Column, Integer, String, Boolean,
-    Text, text, Float,
-    DateTime, ForeignKey, Numeric,
-    String, Text, BigInteger, func)
+    Column,     Integer,    Boolean,
+    Text,       Float,      DateTime,
+    ForeignKey, String,     UUID, func)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
-
 
 class Base(DeclarativeBase):
     pass
 
 intpk = Annotated[int, mapped_column(primary_key=True)]
-# created_at: Mapped[datetime] = mapped_column(server_default=func.now())
-# updated_at: Mapped[datetime] = mapped_column(
-#         server_default=FetchedValue(), server_onupdate=FetchedValue()
-#     )
+
 
 class Users(Base):
     __tablename__ = 'base_users'
@@ -74,20 +68,36 @@ class Banners(Base):
     photo =  Column(Text)
     photo_tg_id = Column(Text)
 
+class PaidOrder(Base):
+    __tablename__ = 'base_paidorder'
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    total_amount =  Column(Integer, nullable=True)
+    telegram_payment_charge_id = Column(Text, nullable=True)
+    provider_payment_charge_id = Column(Text, nullable=True)
+    shipping_option = Column(Text, nullable=True)
+    contact_name = Column(Text, nullable=True)
+    contact_phone_number = Column(Text, nullable=True)
+    shipping_state = Column(Text, nullable=True)
+    shipping_city = Column(Text, nullable=True)
+    shipping_street_line1 = Column(Text, nullable=True)
+    shipping_street_line2 = Column(Text, nullable=True)
+    shipping_post_code = Column(Text, nullable=True)
+    time_create = Column(DateTime, server_default=func.now())
 
 class Basket(Base):
     __tablename__ = 'base_basket'
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    order_number = Column(Integer, nullable=True)
     item_id = Column(Integer, ForeignKey('base_items.id'), nullable=False)
     user_id = Column(Integer, ForeignKey('base_users.id'), nullable=False)
     count =  Column(Integer)
+    paid_order_id = Column(Integer, ForeignKey('base_paidorder.id'), nullable=True)
     paid = Column(Boolean, default=False)
-    delivery_place = Column(Text, nullable=True)
+    #delivery_place = Column(Text, nullable=True)
     time_create = Column(DateTime, server_default=func.now())
 
     item = relationship("Items", lazy="joined")
     user = relationship("Users", lazy="joined")
+    paid_order = relationship("PaidOrder", lazy="joined")
 
 class Mailings(Base):
     __tablename__ = 'base_mailings'

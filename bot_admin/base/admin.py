@@ -7,7 +7,7 @@ from .models import (
 
 from lexicon import (
     PICTURE,        TG_USER_NAME,       NAME_OF_ITEM,
-    ARTICUL_OF_ITEM,   PICTURE_OF_ITEM)
+    ARTICUL_OF_ITEM,   PICTURE_OF_ITEM, PAID_ORDER_ID)
 
 
 
@@ -63,14 +63,13 @@ class BannersAdmin(admin.ModelAdmin):
 class BasketAdmin(admin.ModelAdmin):
     list_display = (
         'id',
-        'paid_order',
+        'paid_order_id',
         'post_item_articul',
         'post_item_name',
         'post_item_photo',
         'count',
         'paid',
         'user_name',
-        'delivery_place',
         'time_create')
     list_display_links = ('id',)
 
@@ -91,6 +90,10 @@ class BasketAdmin(admin.ModelAdmin):
     @admin.display(description=TG_USER_NAME)
     def user_name(self, basket: Basket):
         return f"{basket.user.user_name}"
+
+    @admin.display(description=PAID_ORDER_ID)
+    def paid_order_id(self, basket: Basket):
+        return f"{basket.paid_order.id}"
 
 @admin.register(PaidOrder)
 class PaidOrderAdmin(admin.ModelAdmin):

@@ -7,8 +7,6 @@ class Paginator:
         self.page = page
         self.len = len(self.array)
         self.pages = math.ceil(self.len / self.per_page)
-        print("____________pages______")
-        print(self.pages)
 
     def __get_slice(self):
         start = (self.page - 1) * self.per_page
@@ -17,7 +15,6 @@ class Paginator:
 
     def get_page(self):
         page_items = self.__get_slice()
-        print(page_items)
         return page_items
 
     def has_next(self):
