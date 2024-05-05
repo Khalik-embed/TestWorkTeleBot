@@ -18,24 +18,23 @@ services:
     image: python:3.12
     container_name: tele_bot
     build: .
-    command: python bot/echo.py
+    command: python bot/bot.py
     volumes:
       - .:/app
     networks:
       - backend
-    # ports:
-    #   - "8000:8000"
     env_file:
       - .env
+    environment:
+      - POSTGRES_HOST=database
+    depends_on:
+      database:
+        condition: service_healthy
 
   database:
     image: postgres:16.2
     container_name: database
     environment:
-      POSTGRES_DB: "database"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: "postgresql337290entr"
-      POSTGRES_PORT: 5432
       PGDATA: "/var/lib/postgresql/data/pgdata"
     networks:
       - backend
@@ -43,6 +42,8 @@ services:
       - "5432:5432"
     volumes:
       - data:/var/lib/postgresql/data
+    env_file:
+      - .env
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d database"]
       interval: 10s
@@ -60,7 +61,6 @@ services:
     image: python:3.12
     container_name: bot_admin
     build: .
-    #command: bash -c "python manage.py collectstatic --noinp&ut && python manage.py migrate  && gunicorn -b 0.0.0.0:8000 bot_admin.wsgi:application"
     command: bash -c "cd bot_admin && python manage.py collectstatic --noinput && python manage.py migrate  && gunicorn -b 0.0.0.0:8000 bot_admin.wsgi:application"
     restart: always
     ports:
@@ -85,34 +85,3 @@ volumes:
 networks:
   backend:
     driver: bridge
-
-    # env_file:
-    #   - .env
-    # healthcheck:
-    #   test: ["CMD-SHELL", "pg_isready -U postgres"]
-    #   interval: 10s
-    #   timeout: 5s
-    #   retries: 5
-    # networks:
-    #   - backend
-
-#     #command: bash -c "python manage.py collectstatic --noinput && python manage.py migrate  && gunicorn -b 0.0.0.0:8000 bot_admin.wsgi:application"
-#     #command: python bot_admin/manage.py migrate && python bot_admin/manage.py runserver 0.0.0.0:8000
-#     ports:
-#       - "8001:8001"
-#     environment:
-#       - DB_HOST=db
-#     env_file:
-#       - .env
-#     volumes:
-#       - .:/app
-#     # networks:
-#     #   - backend
-#     depends_on:
-#       db:
-#         condition: service_healthy
-
-# services:
-
-# # networks:
-# #   backend:

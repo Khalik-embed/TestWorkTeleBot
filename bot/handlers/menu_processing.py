@@ -1,3 +1,4 @@
+import logging
 from aiogram.methods.get_me import GetMe
 from aiogram.types import (
     InputMediaPhoto,

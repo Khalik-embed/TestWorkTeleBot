@@ -3,7 +3,7 @@ from typing import Any
 from dataclasses import dataclass
 from lexicon import NAVIGATION
 
-BANNERS = Enum('BANNERS', ['subscrion_required', 'start_menu', 'categories', 'subcategories', 'basket', 'items', 'faq'])
+BANNERS = Enum('BANNERS', ['subscrion_required', 'start_menu', 'categories', 'subcategories', 'basket', 'items'])
 COMMANDS = Enum('COMMANDS', ['add_to_basket', 'payment', 'delete', 'decrement', 'increment', 'back', 'next', 'prev', 'faq'])
 
 class MenuLevel(Enum):
