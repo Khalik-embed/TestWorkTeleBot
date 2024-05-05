@@ -1,0 +1,87 @@
+version: '3.12'
+
+services:
+  nginx:
+    container_name: nginx
+    build: ./nginx
+    restart: always
+    volumes:
+      - static:/static
+    ports:
+      - "80:80"
+    networks:
+      - backend
+    depends_on:
+      - bot_admin
+
+  tele_bot:
+    image: python:3.12
+    container_name: tele_bot
+    build: .
+    command: python bot/bot.py
+    volumes:
+      - .:/app
+    networks:
+      - backend
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=database
+    depends_on:
+      database:
+        condition: service_healthy
+
+  database:
+    image: postgres:16.2
+    container_name: database
+    environment:
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    networks:
+      - backend
+    ports:
+      - "5432:5432"
+    volumes:
+      - data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d database"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+
+  bot_admin:
+    image: python:3.12
+    container_name: bot_admin
+    build: .
+    command: bash -c "cd bot_admin && python manage.py collectstatic --noinput && python manage.py migrate  && gunicorn -b 0.0.0.0:8000 bot_admin.wsgi:application"
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=database
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - static:/static
+    networks:
+      - backend
+    depends_on:
+      database:
+        condition: service_healthy
+
+volumes:
+  data:
+  static:
+
+networks:
+  backend:
+    driver: bridge
